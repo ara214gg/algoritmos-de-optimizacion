@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+math-field::part(container) {
+    @apply flex-row;
+}
+math-field::part(content) {
+    @apply flex-row;
+}
