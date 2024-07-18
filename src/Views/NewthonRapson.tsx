@@ -40,7 +40,7 @@ export default function NewthonRapson() {
             setDerivadaLaTex("f^{\\prime}\\left(x\\right)=" + derivadaNode.toTex());
             setOriginal(originalNode.compile());
             setDerivada(derivadaNode.compile());
-            let pn = Number.parseInt(pnValue);
+            let pn = Number.parseFloat(pnValue);
             let firstElement: Values = {
                 error: undefined,
                 pn,
