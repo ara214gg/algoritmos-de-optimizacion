@@ -11,12 +11,12 @@ export const routes: readonly RouteObject[] = [
     {
         element: <Background/>,
         children:[
-            {path:'/', element:<Menu/>},
-            {path:'/newton-rapson', element:<NewthonRapson/>}
+            {path:'/', element:<Menu/>, handle:{title:"Algoritmos de Optimización"}},
+            {path:'/newton-rapson', element:<NewthonRapson/>, handle:{title:"Algoritmo de Newton Rapson"}}
         ],
-        handle: {title: "Algoritmos de Optimizacion", requiresLogin: true},
+        handle: {title: "Algoritmos de Optimización"},
         errorElement:<NotFound/>
     }
 ];
 
-export const router = createBrowserRouter([...routes], {basename: new URL(document.baseURI).pathname });
+export const router = createBrowserRouter([...routes]);
