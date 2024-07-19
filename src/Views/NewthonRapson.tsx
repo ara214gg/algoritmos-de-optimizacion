@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {all, create, EvalFunction} from 'mathjs';
 import "//unpkg.com/mathlive";
 import {convertLatexToAsciiMath, MathfieldElement} from "mathlive";
+import {Chart} from "react-google-charts";
 
 declare global {
     namespace JSX {
@@ -12,6 +13,7 @@ declare global {
 }
 
 interface Values {
+    n:number;
     pn: number;
     fn: number;
     derivada: number;
@@ -28,11 +30,16 @@ export default function NewthonRapson() {
     const [derivada, setDerivada] = useState<EvalFunction>(new math.ConstantNode(1));
     const [pnValue, setPnValue] = useState<string>("");
     const [values, setValues] = useState<Values[]>([]);
+    const [chartValues, setChartValues] = useState<(string[] | number[])[]>([]);
 
     const mf1 = useRef<MathfieldElement | null>(null);
 
     const ejecutarNewtoRapson = async () => {
         setValues([]);
+        setChartValues( [[
+            "Iteración",
+            "Error"
+        ],[0,1]]);
         const ascciiFunction = convertLatexToAsciiMath(originalLaTex.replace("f\\left(x\\right)=", ""));
         try {
             let originalNode = math.parse(ascciiFunction);
@@ -42,6 +49,7 @@ export default function NewthonRapson() {
             setDerivada(derivadaNode.compile());
             let pn = Number.parseFloat(pnValue);
             let firstElement: Values = {
+                n:0,
                 error: undefined,
                 pn,
                 fn: originalNode.compile().evaluate({x: pn}),
@@ -59,6 +67,7 @@ export default function NewthonRapson() {
         const prevValues = values[maxIndex - 1];
         const pn = prevValues.pn - (prevValues.fn / prevValues.derivada);
         let newValues: Values = {
+            n:prevValues.n+1,
             pn,
             fn: original.evaluate({x: pn}),
             derivada: derivada.evaluate({x: pn}),
@@ -66,6 +75,7 @@ export default function NewthonRapson() {
         }
         if (prevValues.error !== Math.abs(pn - prevValues.pn)) {
             setValues(prevState => [...prevState, newValues]);
+            setChartValues(prevState=>[...prevState,[prevValues.n+1,Math.abs(pn - prevValues.pn)]])
         }
     }
 
@@ -73,6 +83,10 @@ export default function NewthonRapson() {
         mf1.current!.mathVirtualKeyboardPolicy = "manual";
         mf1.current!.contentEditable = "false";
         setOriginalLaTex("f\\left(x\\right)=");
+        setChartValues( [[
+            "Iteración",
+            "Error"
+        ],[0,1]]);
     }, []);
 
     useEffect(() => {
@@ -80,6 +94,12 @@ export default function NewthonRapson() {
             setTimeout(calculateNextElement, 1000);
         }
     }, [values]);
+
+    const options = {
+        chart: {
+            title: "Reducción del error por cada iteración"
+        },
+    };
 
     return (
         <div>
@@ -105,7 +125,7 @@ export default function NewthonRapson() {
                     placeholder="Valor inicial de pn"
                 />
             </div>
-            <div className="my-10 min-w-[100%]">
+            <div className="my-5 min-w-[100%]">
                 <button
                     disabled={(originalLaTex === "f\\left(x\\right)=" || pnValue === "")}
                     className="py-2 px-4 font-semibold rounded-lg shadow-md text-white bg-blue-700 hover:bg-blue-900 disabled:bg-blue-700/50"
@@ -113,6 +133,15 @@ export default function NewthonRapson() {
                 >
                     Ejecutar
                 </button>
+            </div>
+            <div className="my-5">
+                <Chart
+                    chartType="Line"
+                    width="100%"
+                    height="600px"
+                    data={chartValues}
+                    options={options}
+                />
             </div>
             <div className="overflow-auto">
                 <table className="w-full border-collapse border border-gray-300">
@@ -133,7 +162,7 @@ export default function NewthonRapson() {
                                 <td className="border border-gray-300 px-4 py-2">{value.pn}</td>
                                 <td className="border border-gray-300 px-4 py-2">{value.fn}</td>
                                 <td className="border border-gray-300 px-4 py-2">{value.derivada}</td>
-                                <td className="border border-gray-300 px-4 py-2">{value.error!==undefined ? value.error : ""}</td>
+                                <td className="border border-gray-300 px-4 py-2">{value.error !== undefined ? value.error : ""}</td>
                             </tr>
                         )
                     }
