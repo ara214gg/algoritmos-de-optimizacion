@@ -246,7 +246,7 @@ export default function Gradiente() {
               <th className="border border-gray-300 px-4 py-2">Convergencia</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-center bg-white">
             {iterations.map((iter) => (
               <tr key={iter.n}>
                 <td className="border border-gray-300 px-4 py-2">{iter.n}</td>
