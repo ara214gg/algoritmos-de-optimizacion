@@ -13,8 +13,10 @@ export default function Menu() {
                     </NavLink>
                 </button>
                 <button
-                    className="py-2 px-4 font-semibold rounded-lg shadow-md text-white bg-blue-700 hover:bg-blue-900">Gradiente
-                    Descendente
+                    className="py-2 px-4 font-semibold rounded-lg shadow-md text-white bg-blue-700 hover:bg-blue-900">
+                    <NavLink to={'/gradiente'}>
+                    Gradiente Descendente
+                    </NavLink>
                 </button>
             </div>
         </div>
